@@ -27,6 +27,7 @@ bool IsDate1BeforeDate2(stDate Date1, stDate Date2)
 		Date2.Year) ? (Date1.Month < Date2.Month ? true : (Date1.Month ==
 			Date2.Month ? Date1.Day < Date2.Day : false)) : false);
 }
+
 bool IsDate1EqualDate2(stDate Date1, stDate Date2)
 {
 	return (Date1.Year == Date2.Year) ? ((Date1.Month ==
@@ -50,8 +51,9 @@ short NumbersOfDaysInMonth(short Month, short Year)
 
 	return (Month == 2) ? (isLeapYear(Year) ? 29 : 28) : daysInMonth[Month - 1];
 
-
 }
+
+
 
 bool IsLastDayInMonth(stDate Date)
 {
@@ -64,130 +66,62 @@ bool IsLastMonthInYear(stDate Date)
 }
 
 
-stDate IncreaseDateByOneDay(stDate Date)
+bool ValidateDate(stDate Date )
 {
-	if (IsLastDayInMonth(Date))
-	{
-		if (IsLastMonthInYear(Date))
-		{
-			Date.Month = 1;
-			Date.Day = 1;
-			Date.Year++;
-		}
-		else {
-			Date.Month++;
-		}
-
-	}
-	else {
-		Date.Day++;
-	}
-
-	return Date;
-}
-
-int GetDiffrenceInDays(stDate Date1, stDate Date2, bool IncludeEndDay = false)
-{
-	int Days = 0;
-	while (IsDate1BeforeDate2(Date1, Date2))
-	{
-		Days++;
-		Date1 = IncreaseDateByOneDay(Date1);
-	}
-	return IncludeEndDay ? ++Days : Days;
-}
-
-
-int PeriodLengthInDays(stPeriod period, bool IncludeEndDay = false)
-{
-	return GetDiffrenceInDays(period.StartDate, period.EndDate, IncludeEndDay);
-
-}
-
-enum enDateCompare {
-	After = 1, Equal = 0, Before = -1
-};
-
-
-
-enDateCompare DateCompare(stDate Date1, stDate Date2)
-{
-	if (IsDate1BeforeDate2(Date1, Date2))
-	{
-		return enDateCompare::Before;
-
-	}
-	if (IsDate1AfterDate2(Date1, Date2))
-	{
-		return enDateCompare::After;
-	}
-
-	return enDateCompare::Equal;
-}
-
-bool IsDateInPeriod(stPeriod period, stDate Date)
-{
-	return !(DateCompare(Date, period.StartDate) == enDateCompare::Before || DateCompare(Date, period.EndDate) == enDateCompare::After);
-
-}
-
-
-bool  IsOverLap(stPeriod period1, stPeriod period2)
-{
-	if (DateCompare(period2.EndDate, period1.StartDate) == enDateCompare::Before || DateCompare(period2.StartDate, period1.EndDate) == enDateCompare::After)
+	if (Date.Day < 1  || Date.Day > 31)
 	{
 		return false;
-
 	}
-	return true;
-}
-
-int CountOverLapsDays(stPeriod period1, stPeriod period2)
-{
-	int Period1Length = PeriodLengthInDays(period1, true);
-
-	int Period2Length = PeriodLengthInDays(period2, true);
-	int DaysOverlap = 0;
-
-	if (!IsOverLap(period1, period2))
+	 if (Date.Month < 1 || Date.Month > 12)
 	{
-		return 0;
+		return false;
 	}
+	
 
-	if (Period1Length < Period2Length)
+	if (Date.Month == 2)
 	{
-		while (IsDate1BeforeDate2(period1.StartDate,period1.EndDate))
+		if (isLeapYear(Date.Year))
 		{
-			if (IsDateInPeriod(period2, period1.StartDate))
+			if (Date.Day > 28)
 			{
-				DaysOverlap++;
-
+				return false;
 			}
-				period1.StartDate = IncreaseDateByOneDay(period1.StartDate);
-			
+		
 		}
+		else {
+			if (Date.Day > 29)
+			{
+				return false;
+			}
+		}
+	}
+	short DaysMonth = NumbersOfDaysInMonth( Date.Month,  Date.Year);
+	if (Date.Day > DaysMonth)
+	{
+		return false;
 	}
 	else
-	{
-		while (IsDate1BeforeDate2(period2.StartDate, period2.EndDate))
-		{
-			if (IsDateInPeriod(period1, period2.StartDate)) {
-				DaysOverlap++;
-
-			}
-			period2.StartDate = IncreaseDateByOneDay(period2.StartDate);
-		}
-	}
-	return DaysOverlap;
+		return true; 
 }
+
+
+
+
+
+
+
+
+
+
 
 short ReadDay()
 {
 	short Day;
-	cout << "\nPlease enter a Day? ";
+	cout << "\n Please enter a Day? ";
 	cin >> Day;
 	return Day;
 }
+
 short ReadMonth()
 {
 	short Month;
@@ -205,41 +139,30 @@ short ReadYear()
 
 stDate  ReadDate()
 {
-	stDate StartDate;
+	stDate Date;
 
-	StartDate.Day = ReadDay();
-	StartDate.Month = ReadMonth();
-	StartDate.Year = ReadYear();
+	Date.Day = ReadDay();
+	Date.Month = ReadMonth();
+	Date.Year = ReadYear();
 
-	return StartDate;
+	return Date;
 }
 
 
-stPeriod ReadPeriod()
-{
-	stPeriod Period;
-	cout << "Enter Start Date\n";
-	Period.StartDate = ReadDate();
-	cout << "Enter End Date\n";
-	Period.EndDate = ReadDate();
 
-	return Period;
-}
 
 
 int main()
 {
-	cout << "Enter Period 1 \n";
+	stDate Date;
 
-	stPeriod period1 = ReadPeriod();
+	Date = ReadDate();
 
-	cout << "Enter Period 2 \n";
+	if (ValidateDate(Date))
+	{
+		cout << "Yes , is  valide Date ";
+	}else
+		cout << "No , is not   valide Date ";
 
-	stPeriod period2 = ReadPeriod();
-
-	cout << "Days Overlap is : \n";
-
-	cout << CountOverLapsDays(period1, period2);
-	
 
 }
