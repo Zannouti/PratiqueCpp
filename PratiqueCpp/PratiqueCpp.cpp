@@ -26,7 +26,7 @@ struct sUser
 {
     string UserName;
     string Password;
-    string Permission;
+    short Permission;
 };
 
 vector<string> SplitString(string S1, string Delim)
@@ -78,7 +78,7 @@ sUser ConvertLineUsertoRecord(string Line, string Seperator = "#//#")
 
     User.UserName = vUserData[0];
     User.Password = vUserData[1];
-    User.Permission = vUserData[2];
+    User.Permission = stoi(vUserData[2]);
     return User;
 }
 
@@ -92,6 +92,17 @@ string ConvertRecordToLine(sClient Client, string Seperator = "#//#")
     stClientRecord += Client.Phone + Seperator;
     stClientRecord += to_string(Client.AccountBalance);
     return stClientRecord;
+}
+string ConvertRecordUserToLine(sUser User,string Seperater = "#//#")
+{
+    string stUserRecord = "";
+    stUserRecord += User.UserName + Seperater;
+    stUserRecord += User.Password + Seperater;
+    stUserRecord += to_string(User.Permission ) ;
+
+    return stUserRecord;
+
+
 }
 
 bool ClientExistsByAccountNumber(string AccountNumber, string FileName)
@@ -190,7 +201,7 @@ sUser ReadNewUser()
 
     getline(cin >> ws, User.UserName);
 
-    while (ClientExistsByAccountNumber(User.UserName, UserFileName))
+    while (UserExistsByAccountNumber(User.UserName, UserFileName))
     {
         cout << "\User with [" << User.UserName << "] already exists, Enter another Account Number? ";
         getline(cin >> ws, User.UserName);
@@ -378,18 +389,20 @@ void AddDataLineToFile(string FileName, string  stDataLine)
     }
 }
 
+
+
 void AddNewClient()
 {
     sClient Client;
     Client = ReadNewClient();
-    AddDataLineToFile(UserFileName, ConvertRecordToLine(Client));
+    AddDataLineToFile(ClientsFileName, ConvertRecordToLine(Client));
 }
 
 void AddNewUser()
 {
     sUser User;
     User = ReadNewUser();
-    AddDataLineToFile(ClientsFileName,ConvertLineUsertoRecord(User));
+    AddDataLineToFile(UserFileName,ConvertRecordUserToLine(User));
 }
 
 void AddNewClients()
@@ -889,6 +902,8 @@ void PerfromMainMenueOption(enMainMenueOptions MainMenueOption)
     case enMainMenueOptions :: ManageUsers:
         system("cls");
         ShowManageUsersMenuScreen();
+        GoBackToMainMenue();
+
     }
 }
 
