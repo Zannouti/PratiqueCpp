@@ -29,6 +29,12 @@ struct sUser
     short Permission;
 };
 
+short AddClient = 2;
+short DeleteClient = 4;
+short UpdateClient = 8;
+short ShowClientList = 16;
+short FindClient = 32;
+
 vector<string> SplitString(string S1, string Delim)
 {
     vector<string> vString;
@@ -133,7 +139,6 @@ bool ClientExistsByAccountNumber(string AccountNumber, string FileName)
     }
     return false;
 }
-
 bool UserExistsByAccountNumber(string UserName, string FileName)
 {
 
@@ -194,6 +199,24 @@ sClient ReadNewClient()
     return Client;
 }
 
+short ReadPermessionsToSet(sUser User)
+{
+    User.Permission = 0;
+
+    
+    char answer ;
+     answer = 'n';
+
+    cout << "show client list y/n ?";
+    cin >> answer;
+
+    if (answer == 'y' || answer == 'Y')
+        User.Permission = User.Permission | ShowClientList;
+    if((User.Permission& ShowClientList) == ShowClientList)
+    return User.Permission;
+
+}
+
 sUser ReadNewUser()
 {
     sUser User;
@@ -209,6 +232,8 @@ sUser ReadNewUser()
 
     cout << "Enter Password? ";
     getline(cin, User.Password);
+
+    User.Permission = ReadPermessionsToSet(User);
 
     return User;
 }
@@ -932,5 +957,6 @@ int main()
 {
     ShowMainMenue();
     system("pause>0");
+
     return 0;
 }
